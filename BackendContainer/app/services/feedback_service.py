@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from typing import Dict, Any
-from bson import ObjectId
-from app.services.db import get_db
+from app.services.db import get_repositories
 
 # PUBLIC_INTERFACE
 async def store_feedback(username: str, feedback: str, rating: int | None) -> Dict[str, Any]:
@@ -16,17 +15,17 @@ async def store_feedback(username: str, feedback: str, rating: int | None) -> Di
     Returns:
         Inserted document details.
     """
-    db = get_db()
-    doc = {
-        "username": username,
-        "feedback": feedback,
-        "rating": rating,
+    repos = get_repositories()
+    # Ensure user exists (simulated or mongo)
+    await repos.users.create_stub_if_missing(username=username)
+    payload = {
+        "action": "feedback_submit",
+        "details": {
+            "username": username,
+            "feedback": feedback,
+            "rating": rating,
+        },
         "timestamp": datetime.now(timezone.utc),
     }
-    res = await db.get_collection("audit_logs").insert_one({
-        "user_id": ObjectId(),  # Placeholder; in a real system map to users._id
-        "action": "feedback_submit",
-        "details": doc,
-        "timestamp": datetime.now(timezone.utc),
-    })
-    return {"id": str(res.inserted_id)}
+    res = await repos.feedback.add_audit_log(payload)
+    return {"id": res.inserted_id}

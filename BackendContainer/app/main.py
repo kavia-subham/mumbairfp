@@ -6,7 +6,7 @@ from app.api.routers.feedback import router as feedback_router
 from app.api.routers.documents import router as documents_router
 from app.api.routers.guide import router as guide_router
 from app.api.routers.chat import router as chat_router
-from app.services.db import connect_to_mongo, close_mongo_connection
+from app.services.db import connect_to_backend, close_backend
 
 # PUBLIC_INTERFACE
 def create_app() -> FastAPI:
@@ -39,14 +39,14 @@ def create_app() -> FastAPI:
     app.include_router(documents_router, tags=["Documents"])
     app.include_router(guide_router, prefix="/api/v1", tags=["Guidance and Processing"])
 
-    # DB lifecycle
+    # Backend lifecycle (simulated or mongo based on USE_SIMULATED_DB)
     @app.on_event("startup")
     async def startup_event():
-        await connect_to_mongo()
+        await connect_to_backend()
 
     @app.on_event("shutdown")
     async def shutdown_event():
-        await close_mongo_connection()
+        await close_backend()
 
     # WebSocket usage help placeholder (requirement mentions documenting websockets if any)
     @app.get("/ws-info", summary="WebSocket usage info", tags=["Guidance and Processing"])
