@@ -2,6 +2,14 @@
  * Minimal fetch-based API client for the Frontend.
  * Reads base URL from REACT_APP_API_BASE.
  * Stores JWT token in simple in-memory store with optional localStorage.
+ *
+ * Endpoint notes:
+ * - Non-versioned (root) endpoints used by the frontend:
+ *   POST /auth/login
+ *   POST /chat/send
+ *   POST /documents/upload
+ *   POST /feedback
+ * - Versioned endpoints remain under /api/v1 (e.g., /api/v1/guide) and are not used here.
  */
 import { store } from '../store/simpleStore';
 
@@ -28,7 +36,7 @@ async function request(path, { method = 'GET', headers = {}, body, isForm = fals
     data = null;
   }
   if (!resp.ok) {
-    const message = data && data.detail ? data.detail : resp.statusText;
+    const message = data && (data.detail || data.message) ? (data.detail || data.message) : resp.statusText;
     throw new Error(message || 'Request failed');
   }
   return data;
