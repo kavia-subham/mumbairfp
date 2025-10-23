@@ -1,6 +1,6 @@
 {
   "name": "react-kavia",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
     "react": "^18.2.0",
@@ -11,7 +11,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "echo \"Linting skipped (minimal deps)\""
   },
   "eslintConfig": {
     "extends": "react-app"
